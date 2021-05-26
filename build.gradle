@@ -1,0 +1,104 @@
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+repositories {
+    maven {
+        url = "https://dvs1.progwml6.com/files/maven/" // JEI
+    }
+    maven {
+        url = "https://modmaven.dev/" // TF
+    }
+}
+
+version = "1.${minecraftVersionMajor}-${modVersion}${modVersionValue}"
+group = "tamaized.fk"
+archivesBaseName = "FinalKobold"
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+minecraft {
+    mappings("${project.mappingType}", "${project.mappingVersion}")
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                melongolem {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                melongolem {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:1.${project.minecraftVersionMajor}.${project.minecraftVersionMinor}-${project.forgeVersion}"
+
+    runtime fg.deobf("mezz.jei:${project.jeiVersion}")
+    implementation fg.deobf("teamtwilight:twilightforest:4.0.482:universal")
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META-INF/mods.toml'
+        expand([
+                'version': "${project.version}"
+        ])
+    }
+}
+
+jar {
+    manifest {
+        attributes(["Specification-Title"     : "FinalKobold",
+                    "Specification-Vendor"    : "Tamaized",
+                    "Specification-Version"   : "${modVersion}${modVersionValue}",
+                    "Implementation-Title"    : project.name,
+                    "Implementation-Version"  : "${version}",
+                    "Implementation-Vendor"   : "Tamaized",
+                    "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
+    }
+}
+
+task finalize << {
+    ant.propertyfile(file: "gradle.properties") {
+        entry(key: "modVersionValue", value: Integer.parseInt(project.modVersionValue) + 1)
+    }
+}
+
+build.finalizedBy(finalize)

@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+issueTrackerURL="https://github.com/Tamaized/FinalKobold/issues"
+license="All Rights Reserved"
+[[mods]]
+modId="fk"
+version="${version}"
+displayName="FinalKobold"
+credits=""
+authors="Tamaized"
+description='''
+
+'''
+
+[[dependencies.fk]]
+    modId="twilightforest"
+    mandatory=true
+    versionRange="[4.0.482,)"
+    ordering="AFTER"
+    side="BOTH"

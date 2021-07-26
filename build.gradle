@@ -71,7 +71,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:1.${project.minecraftVersionMajor}.${project.minecraftVersionMinor}-${project.forgeVersion}"
 
     runtime fg.deobf("mezz.jei:${project.jeiVersion}")
-    implementation fg.deobf("teamtwilight:twilightforest:4.0.482:universal")
+    implementation fg.deobf("teamtwilight:twilightforest:${project.tfVersion}:universal")
 }
 
 processResources {

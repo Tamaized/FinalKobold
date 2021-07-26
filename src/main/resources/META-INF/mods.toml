@@ -15,6 +15,6 @@ description='''
 [[dependencies.fk]]
     modId="twilightforest"
     mandatory=true
-    versionRange="[4.0.482,)"
+    versionRange="[4.0.515,)"
     ordering="AFTER"
     side="BOTH"

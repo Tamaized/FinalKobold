@@ -3,12 +3,9 @@ package tamaized.fk;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IServerWorld;
@@ -19,10 +16,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import twilightforest.block.TFBlocks;
-import twilightforest.entity.EntityTFKobold;
+import twilightforest.entity.KoboldEntity;
 import twilightforest.entity.TFEntities;
-import twilightforest.tileentity.spawner.TileEntityTFBossSpawner;
-import twilightforest.tileentity.spawner.TileEntityTFFinalBossSpawner;
+import twilightforest.tileentity.spawner.BossSpawnerTileEntity;
+import twilightforest.tileentity.spawner.FinalBossSpawnerTileEntity;
 
 @Mod(value = "fk")
 public class FinalKobold {
@@ -36,17 +33,17 @@ public class FinalKobold {
 		tiles.register(FMLJavaModLoadingContext.get().getModEventBus());
 	}
 
-	public static TileEntityTFBossSpawner<?> asm(TileEntityTFBossSpawner<?> o) {
-		if (o instanceof TileEntityTFFinalBossSpawner)
+	public static BossSpawnerTileEntity<?> asm(BossSpawnerTileEntity<?> o) {
+		if (o instanceof FinalBossSpawnerTileEntity)
 			return spawner.get().create();
 		return o;
 	}
 
 	public static int red(int o, LivingEntity entity, float partialTicks) {
-		return entity instanceof EntityTFKobold && entity.getBaseAttributeValue(Attributes.MAX_HEALTH) >= 1024 ? 1 : o;
+		return entity instanceof KoboldEntity && entity.getBaseAttributeValue(Attributes.MAX_HEALTH) >= 1024 ? 1 : o;
 	}
 
-	private static final class TileEntityFKFinalBossSpawner extends TileEntityTFFinalBossSpawner {
+	private static final class TileEntityFKFinalBossSpawner extends FinalBossSpawnerTileEntity {
 
 		@Override
 		public void tick() {
@@ -66,7 +63,7 @@ public class FinalKobold {
 		}
 
 		protected boolean spawnMyBoss(IServerWorld world) {
-			EntityTFKobold myCreature = TFEntities.kobold.create(world.getWorld());
+			KoboldEntity myCreature = TFEntities.kobold.create(world.getWorld());
 			myCreature.moveToBlockPosAndAngles(this.pos, world.getWorld().rand.nextFloat() * 360.0F, 0.0F);
 			myCreature.onInitialSpawn(world, world.getDifficultyForLocation(this.pos), SpawnReason.SPAWNER, null, null);
 

@@ -8,7 +8,7 @@ function initializeCoreMod() {
         'boss': {
             'target': {
                 'type': 'METHOD',
-                'class': 'twilightforest.block.BlockTFBossSpawner',
+                'class': 'twilightforest.block.BossSpawnerBlock',
                 'methodName': 'createTileEntity',
                 'methodDesc': '(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/IBlockReader;)Lnet/minecraft/tileentity/TileEntity;'
             },
@@ -21,7 +21,7 @@ function initializeCoreMod() {
                             Opcodes.INVOKESTATIC,
                             'tamaized/fk/FinalKobold',
                             'asm',
-                            '(Ltwilightforest/tileentity/spawner/TileEntityTFBossSpawner;)Ltwilightforest/tileentity/spawner/TileEntityTFBossSpawner;',
+                            '(Ltwilightforest/tileentity/spawner/BossSpawnerTileEntity;)Ltwilightforest/tileentity/spawner/BossSpawnerTileEntity;',
                             false
                             )
                         )

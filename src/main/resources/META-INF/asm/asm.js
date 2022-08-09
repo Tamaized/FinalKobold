@@ -70,13 +70,13 @@ function initializeCoreMod() {
             'target': {
                 'type': 'METHOD',
                 'class': 'twilightforest/world/components/structures/finalcastle/FinalCastleBossGazeboComponent',
-                'methodName': ASM.mapMethod('m_7832_'), // postProcess
-                'methodDesc': '(Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/world/level/StructureFeatureManager;Lnet/minecraft/world/level/chunk/ChunkGenerator;Ljava/util/Random;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/core/BlockPos;)Z'
+                'methodName': ASM.mapMethod('m_183269_'), // postProcess
+                'methodDesc': '(Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/world/level/StructureFeatureManager;Lnet/minecraft/world/level/chunk/ChunkGenerator;Ljava/util/Random;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/core/BlockPos;)V'
             },
             'transformer': function (/*org.objectweb.asm.tree.MethodNode*/ methodNode) {
                 var /*org.objectweb.asm.tree.InsnList*/ instructions = methodNode.instructions;
                 instructions.insertBefore(
-                    ASM.findFirstInstruction(methodNode, Opcodes.IRETURN),
+                    ASM.findFirstInstruction(methodNode, Opcodes.RETURN),
                     ASM.listOf(
                         new VarInsnNode(Opcodes.ALOAD, 0),
                         new VarInsnNode(Opcodes.ALOAD, 1),
@@ -84,7 +84,7 @@ function initializeCoreMod() {
                             Opcodes.INVOKESTATIC,
                             'tamaized/fk/FinalKobold',
                             'gazebo',
-                            '(ZLnet/minecraft/world/level/levelgen/structure/StructurePiece;Lnet/minecraft/world/level/WorldGenLevel;)Z',
+                            '(Lnet/minecraft/world/level/levelgen/structure/StructurePiece;Lnet/minecraft/world/level/WorldGenLevel;)V',
                             false
                             )
                         )

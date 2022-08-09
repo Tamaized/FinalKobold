@@ -23,7 +23,7 @@ import java.util.Objects;
 @ParametersAreNonnullByDefault
 public class FinalKobold {
 	public static boolean asm(boolean b, BlockPos pos, ServerLevelAccessor world) {
-		Kobold myCreature = TFEntities.KOBOLD.create(world.getLevel());
+		Kobold myCreature = TFEntities.KOBOLD.get().create(world.getLevel());
 		if (myCreature == null) return false;
 
 		myCreature.moveTo(pos, world.getLevel().random.nextFloat() * 360.0F, 0.0F);
@@ -45,8 +45,7 @@ public class FinalKobold {
 		return entity instanceof Kobold && entity.getAttributeBaseValue(Attributes.MAX_HEALTH) >= 1024 ? 1 : o;
 	}
 
-	public static boolean gazebo(boolean b, StructurePiece structurePiece, WorldGenLevel level) {
+	public static void gazebo(StructurePiece structurePiece, WorldGenLevel level) {
 		structurePiece.placeBlock(level, TFBlocks.FINAL_BOSS_BOSS_SPAWNER.get().defaultBlockState(), 10, 1, 10, structurePiece.getBoundingBox());
-		return b;
 	}
 }

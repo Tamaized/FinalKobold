@@ -28,7 +28,7 @@ repositories {
 version = "${artifactor_minecraft_version}-${artifactor_mod_version}." + (hasProperty("CIVersion") ? CIVersion : mod_version)
 group = "tamaized.fk"
 archivesBaseName = "FinalKobold"
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
     mappings("${project.mapping_type}", "${project.mapping_version}")

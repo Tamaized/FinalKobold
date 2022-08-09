@@ -4,24 +4,35 @@ function initializeCoreMod() {
     var ASM = Java.type('net.minecraftforge.coremod.api.ASMAPI');
     var Opcodes = Java.type('org.objectweb.asm.Opcodes');
 
+    var MethodInsnNode = Java.type('org.objectweb.asm.tree.MethodInsnNode');
+    var VarInsnNode = Java.type('org.objectweb.asm.tree.VarInsnNode');
+
     return {
         'boss': {
             'target': {
                 'type': 'METHOD',
-                'class': 'twilightforest.block.BossSpawnerBlock',
-                'methodName': 'createTileEntity',
-                'methodDesc': '(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/IBlockReader;)Lnet/minecraft/tileentity/TileEntity;'
+                'class': 'twilightforest/block/entity/spawner/FinalBossSpawnerBlockEntity',
+                'methodName': 'spawnMyBoss',
+                'methodDesc': '(Lnet/minecraft/world/level/ServerLevelAccessor;)Z'
             },
             'transformer': function (/*org.objectweb.asm.tree.MethodNode*/ methodNode) {
                 var /*org.objectweb.asm.tree.InsnList*/ instructions = methodNode.instructions;
                 instructions.insertBefore(
-                    ASM.findFirstInstruction(methodNode, Opcodes.ARETURN),
+                    ASM.findFirstInstruction(methodNode, Opcodes.IRETURN),
                     ASM.listOf(
-                        new org.objectweb.asm.tree.MethodInsnNode(
+                        new VarInsnNode(Opcodes.ALOAD, 0),
+                        new MethodInsnNode(
+                            Opcodes.INVOKEVIRTUAL,
+                            'net/minecraft/world/level/block/entity/BlockEntity',
+                            ASM.mapMethod('m_58899_'), // getBlockPos
+                            '()Lnet/minecraft/core/BlockPos;'
+                            ),
+                        new VarInsnNode(Opcodes.ALOAD, 1),
+                        new MethodInsnNode(
                             Opcodes.INVOKESTATIC,
                             'tamaized/fk/FinalKobold',
                             'asm',
-                            '(Ltwilightforest/tileentity/spawner/BossSpawnerTileEntity;)Ltwilightforest/tileentity/spawner/BossSpawnerTileEntity;',
+                            '(ZLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/ServerLevelAccessor;)Z',
                             false
                             )
                         )
@@ -32,22 +43,48 @@ function initializeCoreMod() {
         'red': {
             'target': {
                 'type': 'METHOD',
-                'class': 'net.minecraft.client.renderer.entity.LivingRenderer',
-                'methodName': ASM.mapMethod('func_229117_c_'),
-                'methodDesc': '(Lnet/minecraft/entity/LivingEntity;F)I'
+                'class': 'net.minecraft.client.renderer.entity.LivingEntityRenderer',
+                'methodName': ASM.mapMethod('m_115338_'),
+                'methodDesc': '(Lnet/minecraft/world/entity/LivingEntity;F)I'
             },
             'transformer': function (/*org.objectweb.asm.tree.MethodNode*/ methodNode) {
                 var /*org.objectweb.asm.tree.InsnList*/ instructions = methodNode.instructions;
                 instructions.insertBefore(
                     ASM.findFirstInstruction(methodNode, Opcodes.IRETURN),
                     ASM.listOf(
-                        new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 0),
-                        new org.objectweb.asm.tree.VarInsnNode(Opcodes.FLOAD, 1),
-                        new org.objectweb.asm.tree.MethodInsnNode(
+                        new VarInsnNode(Opcodes.ALOAD, 0),
+                        new VarInsnNode(Opcodes.FLOAD, 1),
+                        new MethodInsnNode(
                             Opcodes.INVOKESTATIC,
                             'tamaized/fk/FinalKobold',
                             'red',
-                            '(ILnet/minecraft/entity/LivingEntity;F)I',
+                            '(ILnet/minecraft/world/entity/LivingEntity;F)I',
+                            false
+                            )
+                        )
+                    );
+                return methodNode;
+            }
+        },
+        'gazebo': {
+            'target': {
+                'type': 'METHOD',
+                'class': 'twilightforest/world/components/structures/finalcastle/FinalCastleBossGazeboComponent',
+                'methodName': ASM.mapMethod('m_7832_'), // postProcess
+                'methodDesc': '(Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/world/level/StructureFeatureManager;Lnet/minecraft/world/level/chunk/ChunkGenerator;Ljava/util/Random;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/core/BlockPos;)Z'
+            },
+            'transformer': function (/*org.objectweb.asm.tree.MethodNode*/ methodNode) {
+                var /*org.objectweb.asm.tree.InsnList*/ instructions = methodNode.instructions;
+                instructions.insertBefore(
+                    ASM.findFirstInstruction(methodNode, Opcodes.IRETURN),
+                    ASM.listOf(
+                        new VarInsnNode(Opcodes.ALOAD, 0),
+                        new VarInsnNode(Opcodes.ALOAD, 1),
+                        new MethodInsnNode(
+                            Opcodes.INVOKESTATIC,
+                            'tamaized/fk/FinalKobold',
+                            'gazebo',
+                            '(ZLnet/minecraft/world/level/levelgen/structure/StructurePiece;Lnet/minecraft/world/level/WorldGenLevel;)Z',
                             false
                             )
                         )

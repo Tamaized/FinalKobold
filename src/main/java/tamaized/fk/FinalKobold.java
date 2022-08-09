@@ -1,84 +1,52 @@
 package tamaized.fk;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 import twilightforest.block.TFBlocks;
-import twilightforest.entity.KoboldEntity;
 import twilightforest.entity.TFEntities;
-import twilightforest.tileentity.spawner.BossSpawnerTileEntity;
-import twilightforest.tileentity.spawner.FinalBossSpawnerTileEntity;
+import twilightforest.entity.monster.Kobold;
+import twilightforest.world.components.structures.finalcastle.FinalCastleBossGazeboComponent;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
 
 @Mod(value = "fk")
+@SuppressWarnings("unused")
+@ParametersAreNonnullByDefault
 public class FinalKobold {
+	public static boolean asm(boolean b, BlockPos pos, ServerLevelAccessor world) {
+		Kobold myCreature = TFEntities.KOBOLD.create(world.getLevel());
+		if (myCreature == null) return false;
 
-	private static final DeferredRegister<TileEntityType<?>> tiles = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, "fk");
-	private static final RegistryObject<TileEntityType<TileEntityFKFinalBossSpawner>> spawner = tiles
+		myCreature.moveTo(pos, world.getLevel().random.nextFloat() * 360.0F, 0.0F);
+		myCreature.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), MobSpawnType.SPAWNER, null, null);
 
-			.register("fk", () -> TileEntityType.Builder.create(TileEntityFKFinalBossSpawner::new, TFBlocks.boss_spawner_final_boss.get()).build(null));
+		myCreature.setCustomName(new TextComponent("Final Kobold"));
+		Objects.requireNonNull(myCreature.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(1024);
+		myCreature.setHealth(myCreature.getMaxHealth());
+		Objects.requireNonNull(myCreature.getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(2048);
+		Objects.requireNonNull(myCreature.getAttribute(Attributes.ARMOR)).setBaseValue(30);
+		Objects.requireNonNull(myCreature.getAttribute(Attributes.ARMOR_TOUGHNESS)).setBaseValue(20);
+		Objects.requireNonNull(myCreature.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).setBaseValue(1);
+		myCreature.hurt(DamageSource.GENERIC, 1F);
 
-	public FinalKobold() {
-		tiles.register(FMLJavaModLoadingContext.get().getModEventBus());
-	}
-
-	public static BossSpawnerTileEntity<?> asm(BossSpawnerTileEntity<?> o) {
-		if (o instanceof FinalBossSpawnerTileEntity)
-			return spawner.get().create();
-		return o;
+		return world.addFreshEntity(myCreature);
 	}
 
 	public static int red(int o, LivingEntity entity, float partialTicks) {
-		return entity instanceof KoboldEntity && entity.getBaseAttributeValue(Attributes.MAX_HEALTH) >= 1024 ? 1 : o;
+		return entity instanceof Kobold && entity.getAttributeBaseValue(Attributes.MAX_HEALTH) >= 1024 ? 1 : o;
 	}
 
-	private static final class TileEntityFKFinalBossSpawner extends FinalBossSpawnerTileEntity {
-
-		@Override
-		public void tick() {
-			if (!this.spawnedBoss && this.anyPlayerInRange()) {
-				if (this.world.isRemote) {
-					double rx = (float) this.pos.getX() + this.world.rand.nextFloat();
-					double ry = (float) this.pos.getY() + this.world.rand.nextFloat();
-					double rz = (float) this.pos.getZ() + this.world.rand.nextFloat();
-					this.world.addParticle(ParticleTypes.SMOKE, rx, ry, rz, 0.0D, 0.0D, 0.0D);
-					this.world.addParticle(ParticleTypes.FLAME, rx, ry, rz, 0.0D, 0.0D, 0.0D);
-				} else if (this.world.getDifficulty() != Difficulty.PEACEFUL && this.spawnMyBoss((ServerWorld) this.world)) {
-					this.world.destroyBlock(this.pos, false);
-					this.spawnedBoss = true;
-				}
-
-			}
-		}
-
-		protected boolean spawnMyBoss(IServerWorld world) {
-			KoboldEntity myCreature = TFEntities.kobold.create(world.getWorld());
-			myCreature.moveToBlockPosAndAngles(this.pos, world.getWorld().rand.nextFloat() * 360.0F, 0.0F);
-			myCreature.onInitialSpawn(world, world.getDifficultyForLocation(this.pos), SpawnReason.SPAWNER, null, null);
-
-			myCreature.setCustomName(new StringTextComponent("Final Kobold"));
-			myCreature.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1024);
-			myCreature.setHealth(myCreature.getMaxHealth());
-			myCreature.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(2048);
-			myCreature.getAttribute(Attributes.ARMOR).setBaseValue(30);
-			myCreature.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue(20);
-			myCreature.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1);
-			myCreature.attackEntityFrom(DamageSource.GENERIC, 1F);
-
-			return world.addEntity(myCreature);
-		}
-
+	public static boolean gazebo(boolean b, StructurePiece structurePiece, WorldGenLevel level) {
+		structurePiece.placeBlock(level, TFBlocks.FINAL_BOSS_BOSS_SPAWNER.get().defaultBlockState(), 10, 1, 10, structurePiece.getBoundingBox());
+		return b;
 	}
-
 }

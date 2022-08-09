@@ -1,17 +1,24 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://maven.parchmentmc.org' }
         jcenter()
         mavenCentral()
         mavenLocal()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
     }
 }
+
+apply plugin: 'java'
+apply plugin: 'idea'
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
 repositories {
     maven {
@@ -25,11 +32,10 @@ repositories {
 version = "1.${minecraftVersionMajor}-${modVersion}${modVersionValue}"
 group = "tamaized.fk"
 archivesBaseName = "FinalKobold"
-
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 minecraft {
-    mappings("${project.mappingType}", "${project.mappingVersion}")
+    mappings channel: 'parchment', version: '2021.10.31-1.17.1'
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
@@ -70,13 +76,12 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:1.${project.minecraftVersionMajor}.${project.minecraftVersionMinor}-${project.forgeVersion}"
 
-    runtime fg.deobf("mezz.jei:${project.jeiVersion}")
+    runtimeOnly fg.deobf("mezz.jei:${project.jeiVersion}")
     implementation fg.deobf("teamtwilight:twilightforest:${project.tfVersion}:universal")
 }
 
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
+    filesMatching("META-INF/mods.toml") {
         expand([
                 'version': "${project.version}"
         ])
@@ -95,7 +100,7 @@ jar {
     }
 }
 
-task finalize << {
+task finalize doLast {
     ant.propertyfile(file: "gradle.properties") {
         entry(key: "modVersionValue", value: Integer.parseInt(project.modVersionValue) + 1)
     }

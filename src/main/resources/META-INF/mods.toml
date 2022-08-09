@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[37,)"
 issueTrackerURL="https://github.com/Tamaized/FinalKobold/issues"
 license="All Rights Reserved"
 [[mods]]
@@ -15,6 +15,6 @@ description='''
 [[dependencies.fk]]
     modId="twilightforest"
     mandatory=true
-    versionRange="[4.0.515,)"
+    versionRange="[4.0.943,)"
     ordering="AFTER"
     side="BOTH"
